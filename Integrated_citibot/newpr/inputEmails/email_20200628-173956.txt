@@ -1,0 +1,7 @@
+To: siddharth.varshney21@gmail.com 
+From: xyz@xyz.com 
+Subject: The transaction ID: 234567 has failed 
+
+Email_Body: failed 
+class: Failed 
+Date: 2020-06-28 
