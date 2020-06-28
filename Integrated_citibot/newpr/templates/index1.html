@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:500&display=swap" rel="stylesheet">
+
+    <!--Import Font Awesome Icon Font-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+
+    <!--Import materialize.css-->
+    <link rel="stylesheet" type="text/css" href="static/css/materialize.min.css">
+
+	<link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -48,7 +63,7 @@
 
         .sue{
         	position: absolute;
-        	right: 100px;
+        	right: 150px;
         	bottom: 20px;
         }
         .test{
@@ -258,82 +273,87 @@
 			</div>
 		  </div>
 	</main>
-	<div>
+	<div class="container">
+		<button type="button" class="btn btn-primary btn-circle btn-md sue"> <b>Upload</b></button>
+ 			<form class = "test" id = "vis" action="\submit" method="POST" enctype="multipart/form-data">
+  				<div class="form-row">
+    				<div class = "small">
+      					<input type="file" name="data">
+    				</div>
+    			<div class = "small">
+      				<input type="submit">
+    			</div>
+  				</div>
+			</form>
 
-	<button name="microphone" id="mike" class="btn btn-primary btn-circle btn-md"><b> Voice</b> </button>
+        <!-- Modal for rendering the charts, declare this if you want to render charts,
+         else you remove the modal -->
+        <div id="modal1" class="modal">
+            <canvas id="modal-chart"></canvas>
+        </div>
 
-<button type="button" class="btn btn-primary btn-circle btn-md sue"> <b>Upload</b></button>
- <form class = "test" id = "vis" action="\submit" method="POST" enctype="multipart/form-data">
-  <div class="form-row">
-    <div class = "small">
-      <input type="file" name="data">
-    </div>
-    <div class = "small">
-      <input type="submit">
-    </div>
-  </div>
-</form>
-</div>
+        <!--chatbot widget -->
+        <div class="widget">
+            <div class="chat_header">
 
-<div  id = "box">
+                <!--Add the name of the bot here -->
+                <span class="chat_header_title">Bot</span>
+                <span class="dropdown-trigger" href='#' data-target='dropdown1'>
+                  <i class="material-icons">
+                  more_vert
+                  </i>
+               </span>
 
-            <div id = "head">
-                <h1 id = "tit" > VoiceBOT </h1>
+                <!-- Dropdown menu-->
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a href="#" id="clear">Clear</a></li>
+                    <li><a href="#" id="restart">Restart</a></li>
+                    <li><a href="#" id="close">Close</a></li>
+                </ul>
             </div>
 
-            <div id = "window">
-
-                {% for ix in range(length) %}
-
-                    {% if ix % 2 == 0 %}
-
-                        <div class = "message sen"> {{lis[ix]}} </div>
-                    {%endif%}
-
-
-                    {% if ix % 2 == 1 %}
-
-                        <div class = "message rec"> {{lis[ix]}} </div>
-
-                    {%endif%}
-
-
-                {%endfor%}
-
+            <!--Chatbot contents goes here -->
+            <div class="chats" id="chats">
+                <div class="clearfix"></div>
 
             </div>
 
-            <div id = "text">
-
-                <form id = "micro" action="/mike" method="POST">
-                    <input type="submit" n​ame="mice" id="but" value="Speak">
-
-                </form>
+            <!--keypad for user to type the message -->
+            <div class="keypad">
+                <textarea id="userInput" placeholder="Type a message..." class="usrInput"></textarea>
+                <div id="sendMic"><i class="fa fa-microphone" aria-hidden="true" style="font-size:24px"></i></div>
+                <div id="sendButton"><i class="fa fa-paper-plane" aria-hidden="true"></i></div>
             </div>
+        </div>
 
+        <!--bot profile-->
+        <div class="profile_div" id="profile_div">
+            <img class="imgProfile" src="static/img/chat.png" />
+        </div>
+
+        <!-- Bot pop-up intro -->
+        <div class="tap-target" data-target="profile_div">
+            <!-- <div class="tap-target-content">
+                <h5 class="white-text">Hey there 👋</h5>
+                <p class="white-text">I can help you get started with Rasa and answer your technical questions.</p>
+            </div> -->
         </div>
 
 
+    </div>
 
-    <div id="webchat"/>
-<script src="https://storage.googleapis.com/mrbot-cdn/webchat-latest.js"></script>
+    <!--JavaScript at end of body for optimized loading-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="static/js/materialize.min.js"></script>
 
-<script>
-  WebChat.default.init({
-    selector: "#webchat",
-    customData: {"language": "en"}, // arbitrary custom data. Stay minimal as this will be added to the socket
-    socketUrl: "http://localhost:5005",
-    socketPath: "/socket.io/",
-    title: "Title",
-    subtitle: "Subtitle",
-  })
-</script>
-
+    <!--Main Script -->
+    <script type="text/javascript" src="static/js/script.js"></script>
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+-->
 <script type="text/javascript">
 
 	var but = document.querySelector('.sue');
@@ -341,14 +361,6 @@
 	but.addEventListener("click", function(){
 		frm.classList.toggle("test");
 	});
-
-
-    var buts = document.querySelector('#mike');
-    var frms = document.querySelector('#box');
-    buts.addEventListener("click", function(){
-        frms.classList.toggle("test");
-    });
 </script>
-
 </body>
 </html>
