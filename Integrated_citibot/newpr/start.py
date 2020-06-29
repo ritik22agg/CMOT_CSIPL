@@ -4,28 +4,28 @@ python start.py
 on localhost:5000
 """
 import csv
-import os
+import os, json
 import time
 from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from listener_xg import handle_new_email
+# from listener_xg import handle_new_email
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_login import LoginManager, login_user, UserMixin, current_user, \
 login_required, logout_user
 from werkzeug.utils import secure_filename
-import json
+
 
 date_ = datetime.today().strftime('%Y-%m-%d')
 
-from xgb_inp import inp
+# from xgb_inp import inp
 from file_parser import allowed_ext, extract_text
-from listener_xg import handle_new_email
-from GLOVE_XGBOOST import train
+# from listener_xg import handle_new_email
+# from GLOVE_XGBOOST import train
 from dataload import loadData
 from voicebotfunc import talk
 
@@ -294,12 +294,13 @@ def welcome():
 def submit():
     if request.method == 'POST':
         file = request.files['data']
-        path = 'botfiles/' + file.filename
+        path = '../botfiles/' + file.filename
         file.save(path)
-        loadData(path)
+        #loadData(path)
         q = 'python Backend/dynamictrain.py ' + path
-        os.system(q)
-        os.system('python Backend/train.py')
+        #os.system(q)
+        #os.system('python Backend/train.py')
+        print("TRAINED !!!")
 
     return redirect('/')
 
@@ -479,14 +480,15 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-lisp = []
-with open('botfiles/records.json') as json_file: 
-    data = json.load(json_file) 
-    for dic in data.values():
-        lisp.append(dic)
+
         
 @app.route("/details", methods = ['GET'])
 def details():
+    lisp = []
+    with open('../botfiles/records.json') as json_file: 
+        data = json.load(json_file) 
+        for dic in data.values():
+            lisp.append(dic)
     return render_template('details.html', lis = lisp)
 
 if __name__ == '__main__':
