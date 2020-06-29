@@ -2,12 +2,13 @@ import traceback
 import mysql.connector
 #systemctl status mysql.service
 #sudo mysql -u root -ppassword
-def query_formation(entities, table:str):
+def query_formation(entities, val, features, table:str):
 
-    query = "SELECT * FROM {} WHERE".format(table)
+    query = "SELECT {} FROM {} WHERE".format(val,table)
     for e in entities:
-        if e['extractor'] == 'CRFEntityExtractor':
-            query += " {} = {} and".format(e['entity'], e['value'])
+      #  if e['extractor'] == 'CRFEntityExtractor':
+        if query.find(e['entity']) == -1 and e['entity'] in features:       
+            query += " {} = '{}' and".format(e['entity'], e['value'])
     print(query)
     return query[:-3]
 
@@ -17,13 +18,14 @@ def getData(query:str, table):
             mydb = mysql.connector.connect(
                 host="localhost",
                 user="root",
-                passwd="Uchihas123",
-                database="rasadatabse"
+                passwd="password",
+                database="Rasadatabases"
                 )
             cursor = mydb.cursor()
             cursor.execute(query)
 
             results = cursor.fetchall()
+            # features = cursor.execute("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA`='Rasadatabases' AND `TABLE_NAME`={}".format(table)).fetchall()
             cursor.execute("show columns from {}".format(table))
             features = cursor.fetchall()
             return results, features

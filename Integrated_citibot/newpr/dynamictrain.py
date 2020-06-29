@@ -102,26 +102,34 @@ class {}(Action):
 
         try:
             entities = tracker.latest_message['entities']
-            intent = tracker.latest_message['intent']
-            table = get_table(intent['name'])
+            intent = tracker.latest_message['intent']['name']
+            table = get_table(intent)
+            primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
                 dispatcher.utter_message(template = '{}')
                 return []
 
-            records, features = getData(query_formation(entities, table), table)
-            features = {{tup[0]:val for tup,val in zip(features,records[0])}}
-            print(records, features)
+            if(containsEntity(primary_key, entities)):
+                val = '*'
+            else:
+                val = intent
+                allrecords, features = getData(query_formation(entities, "*",  final_table[table],table), table)
 
-            # why make two query calls when already have features
-
-            if(len(records)==0 or len(records)>1):
+            records, features = getData(query_formation(entities, val, final_table[table], table), table)
+            if val == "*":
+                allrecords = records
+            saveRecords(table, allrecords)
+            if len(records) == 0:
                 raise ValueError("No record for this query !!!")
-    
-            print(records)
-            #dispatcher.utter_message(text="yy")
-            dispatcher.utter_message(text="{} "+ str(features[intent['name'].lower()]) + " for the given record with id "+ str(features['account_id']) )
-            return [SlotSet("{{}}".format(slot), features[slot.lower()]) for slot in final_table[table]]
+            elif len(records) == 1:
+                features = {{tup[0]:val for tup,val in zip(features,records[0])}}
+                print(records, features)
+                dispatcher.utter_message(text="{} "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
+                return [SlotSet("{{}}".format(slot), features[slot.lower()]) for slot in final_table[table]]
+            else:
+                print(records)
+                return []
 
         except:
             dispatcher.utter_message(text = str(sys.exc_info()[1]))
@@ -233,6 +241,13 @@ def main():
     information_table[table] = list(INTENTS.keys())
     pickle.dump(information_table, open('../data/dict.pkl', 'wb'))
     # dictionary dumped
+    if 'pk.pkl' not in os.listdir('../data'):
+        primary_table = {}
+    else:
+        primary_table = pickle.load(open('../data/pk.pkl', 'rb'))
+
+    primary_table[table] = list(PRIMARY_KEY)
+    pickle.dump(primary_table, open('../data/pk.pkl', 'wb'))
     # invoke nlu
     nlu = open('../data/nlu.md', 'r')
     s = nlu.read().split('##')

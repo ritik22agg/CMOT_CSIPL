@@ -18,7 +18,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from flask_login import LoginManager, login_user, UserMixin, current_user, \
 login_required, logout_user
 from werkzeug.utils import secure_filename
-
+import json
 
 date_ = datetime.today().strftime('%Y-%m-%d')
 
@@ -479,6 +479,15 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+lisp = []
+with open('botfiles/records.json') as json_file: 
+    data = json.load(json_file) 
+    for dic in data.values():
+        lisp.append(dic)
+        
+@app.route("/details", methods = ['GET'])
+def details():
+    return render_template('details.html', lis = lisp)
 
 if __name__ == '__main__':
     db.create_all()
