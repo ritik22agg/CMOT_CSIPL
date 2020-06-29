@@ -191,24 +191,36 @@ def retrain():
 @app.route('/retrain')
 def retrain():
     """
-        append DB emails to training dataset
-        call model from retraining
+    retrain model only if at least 40 mails of new classes
     """
+    org_classes = {'Complete', 'Failed', 'Request', 'General', 'Pending', 'Processing'}
+    new_classes = set()
+    new_classes_40 = set()
+    ctr = 0
+    for mail in mails.query.all():
+        curclass = str(mail.m_class).capitalize()
+        if curclass not in org_classes:
+            new_classes.add(mail.m_class)
+    for mail in mails.query.all():
+        if mail.m_class in new_classes and mails.query.filter(mails.m_class == mail.m_class).count() > 39:
+            new_classes_40.add(mail.m_class)
     with open('emaildataset.csv', 'a') as f:
         f.write('\n')
         f.close()
     with open('emaildataset.csv', 'a') as f:
         out = csv.writer(f)
-        ct=0
         for mail in mails.query.all():
-            out.writerow([mail.mfrom, mail.mto, mail.msubject, mail.mbody, mail.ID, mail.mdate,  mail.m_class])
-            ct = ct +1
-        db.session.query(mails).delete()
-        db.session.commit()
+            if str(mail.m_class).capitalize() in org_classes or mail.m_class in new_classes_40:
+                ctr += 1
+                out.writerow([mail.mfrom, mail.mto, mail.msubject, mail.mbody, mail.ID, mail.mdate, mail.m_class])
+                db.session.delete(mail)
+                db.session.commit()
         f.close()
-        msg = '' + str(ct) + ' mail(s) sent for retraining successfully!'
-        # run model again
+    if ctr > 0:
+        msg = '' + str(ctr) + ' mail(s) sent for retraining successfully!'
         train()
+    else:
+        msg = 'Less than 40 emails of new classes - model not retrained.'
     return render_template('retrained.html', message=msg)
 
 
@@ -272,13 +284,10 @@ def welcome():
         m_class, ID = inp(inputvalues['To'], inputvalues['From'], inputvalues['Subject'], inputvalues['Message'])
         mclass = m_class
         tid = ID
-        rows = db.session.query(mails).all()
-        if len(rows) > 39:
-            retrain()
-        return render_template("index1.html", m=m_class, lis= strs, length=int(len(strs)))
+        return render_template("index1.html", m=m_class)
 
     else:
-        return render_template("index1.html", lis= strs, length=int(len(strs)))
+        return render_template("index1.html")
 
 
 @app.route('/submit', methods = ['POST'])
