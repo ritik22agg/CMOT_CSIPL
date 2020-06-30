@@ -14,13 +14,14 @@ import pandas as pd
 import numpy as np
 import joblib
 from sklearn.metrics import accuracy_score
+from random import seed
+from random import sample
 
 from wordfile import func
 from xgb_inp import EMBEDDINGS_INDEX
 
-
-# from google.colab import files
-# uploaded = files.upload()
+seed(40)
+np.random.seed(40)
 
 
 def train():
@@ -32,40 +33,45 @@ def train():
 
     nlp = spacy.load('en')
 
-    my_stop = ["'d", "'ll", "'m", "'re", "'s", "'ve", 'a', 'cc', 'subject', 'http', 'gbp', 'usd', 'eur', 'inr', 'cad',
-               'thanks', "acc", "id", 'account', 'regards', 'hi', 'hello', 'thank you', 'greetings', 'about', 'above',
-               'across', 'after', 'afterwards', 'alone', 'along', 'am', 'among', 'amongst', 'amount', 'an', 'and',
-               'another', 'any', 'anyhow', 'anyone', 'anything', 'anyway', 'anywhere', 'are', 'around', 'as', 'at',
-               'be', 'became', 'because', 'become', 'becomes', 'becoming', 'been', 'before', 'beforehand', 'behind',
-               'being', 'below', 'beside', 'besides', 'between', 'both', 'bottom', 'but', 'by', 'ca', 'call', 'can',
-               'could', 'did', 'do', 'does', 'doing', 'down', 'due', 'during', 'each', 'eight', 'either', 'eleven',
-               'else', 'elsewhere', 'everyone', 'everything', 'everywhere', 'fifteen', 'fifty', 'first', 'five', 'for',
-               'former', 'formerly', 'forty', 'four', 'from', 'front', 'further', 'get', 'give', 'go', 'had', 'has',
-               'have', 'he', 'hence', 'her', 'here', 'hereafter', 'hereby', 'herein', 'hereupon', 'hers', 'herself',
-               'him', 'himself', 'his', 'how', 'however', 'hundred', 'i', 'if', 'in', 'indeed', 'into', 'is', 'it',
-               'its', 'itself', 'just', 'keep', 'last', 'latter', 'latterly', 'least', 'less', 'made', 'make', 'many',
-               'may', 'me', 'meanwhile', 'might', 'mine', 'more', 'moreover', 'move', 'much', 'must', 'my', 'myself',
-               'name', 'namely', 'neither', 'nevertheless', 'next', 'nine', 'no', 'nobody', 'now', 'nowhere', 'of',
-               'off', 'often', 'on', 'one', 'onto', 'or', 'other', 'others', 'otherwise', 'our', 'ours', 'ourselves',
-               'out', 'own', 'part', 'per', 'perhaps', 'please', 'put', 'quite', 'rather', 're', 'really', 'regarding',
-               'same', 'say', 'see', 'seem', 'seemed', 'seeming', 'seems', 'she', 'should', 'show', 'side', 'since',
-               'six', 'sixty', 'so', 'some', 'somehow', 'someone', 'something', 'sometime', 'somewhere', 'such', 'take',
-               'ten', 'than', 'that', 'the', 'their', 'them', 'themselves', 'then', 'thence', 'there', 'thereafter',
+    my_stop = ['\'d', '\'ll', '\'m', '\'re', '\'s', 'a', 'cc', 'subject', 'http', 'gbp', 'usd', 'eur', 'inr', 'cad',
+               'thanks', 'acc', 'id', 'account', 'regards', 'hi', 'hello', 'thank you', 'greetings', 'about', 'above',
+               'across', 'after', 'afterwards', 'alone', 'along', 'among', 'amongst', 'amount', 'an', 'and', 'another',
+               'any',
+               'anyhow', 'anyone', 'anything', 'anyway', 'anywhere', 'around', 'as', 'at', 'because', 'before',
+               'beforehand',
+               'behind', 'below', 'beside', 'besides', 'between', 'both', 'bottom', 'but', 'by', 'ca', 'call', 'can',
+               'could',
+               'did', 'do', 'does', 'doing', 'down', 'due', 'during', 'each', 'eight', 'either', 'eleven', 'else',
+               'elsewhere', 'everyone', 'everything', 'everywhere', 'fifteen', 'fifty', 'first', 'five', 'for',
+               'former', 'formerly', 'forty', 'four', 'from', 'front', 'further', 'he', 'hence', 'her', 'here',
+               'hereafter', 'hereby', 'herein', 'hereupon', 'hers', 'herself', 'him', 'himself', 'his', 'how',
+               'hundred',
+               'if', 'indeed', 'into', 'it', 'its', 'itself', 'just', 'keep', 'last', 'latter', 'latterly', 'least',
+               'less', 'many', 'may', 'me', 'meanwhile', 'might', 'mine', 'more', 'moreover', 'much', 'must', 'my',
+               'myself', 'name', 'namely', 'neither', 'nevertheless', 'next', 'nine', 'no', 'nobody', 'now', 'nowhere',
+               'of', 'off', 'often', 'on', 'one', 'onto', 'or', 'other', 'others', 'otherwise', 'our', 'ours',
+               'ourselves',
+               'out', 'own', 'per', 'perhaps', 'please', 'quite', 'rather', 're', 'really', 'regarding', 'same', 'she',
+               'side', 'since', 'six', 'sixty', 'so', 'some', 'somehow', 'someone', 'something', 'sometime',
+               'somewhere',
+               'such', 'ten', 'that', 'the', 'their', 'them', 'themselves', 'then', 'thence', 'there', 'thereafter',
                'thereby', 'therefore', 'therein', 'thereupon', 'these', 'they', 'third', 'this', 'those', 'three',
                'through', 'throughout', 'thru', 'thus', 'to', 'together', 'too', 'top', 'toward', 'towards', 'twelve',
-               'twenty', 'two', 'under', 'up', 'upon', 'us', 'using', 'various', 'via', 'was', 'we', 'well', 'were',
-               'whatever', 'whence', 'whenever', 'whereafter', 'whereas', 'whereby', 'wherein', 'whereupon', 'wherever',
-               'whether', 'which', 'while', 'whither', 'whoever', 'whole', 'whom', 'whose', 'will', 'with', 'within',
-               'would', 'yet', 'you', 'your', 'yours', 'yourself', 'yourselves', '‘d', '‘ll', '‘m', '‘re', '‘s', '‘ve',
-               '’d', '’ll', '’m', '’re', '’s', '’ve']
+               'twenty', 'two', 'under', 'up', 'upon', 'us', 'using', 'various', 'via', 'we', 'well', 'whatever',
+               'whence', 'whenever', 'whereafter', 'whereas', 'whereby', 'wherein', 'whereupon', 'wherever', 'whether',
+               'which', 'while', 'whither', 'whoever', 'whole', 'whom', 'whose', 'with', 'within', 'yet', 'you', 'your',
+               'yours', 'yourself', 'yourselves', '\'m', '\'re', '’s']
 
     def get_only_chars(text):
         text = text.replace("-", " ")  # replace hyphens with spaces
         text = text.replace("\t", " ")
         text = text.replace("\n", " ")
+        text = text.replace("n't", " not")
+        text = text.replace("l've", "l have")
+        text = text.replace("d've", "d have")
 
-        text = text.rstrip()
-        text = re.sub(r'[^a-zA-Z]', ' ', text)
+        text = nlp(text)
+        text = " ".join(token.orth_ for token in text if not token.is_punct | token.is_space)
         t = ""
 
         for i in text.lower().split():
@@ -75,14 +81,11 @@ def train():
                 t += i + " "
 
         t = t.rstrip()
+        text = " ".join([i for i in t.lower().split() if i not in my_stop])
+        text = re.sub(r'[^a-zA-Z]', ' ', text)
+        text = " ".join([i for i in text.split() if len(i) != 1])
 
-        text = " ".join([i for i in t.lower().split()])
-        text = " ".join(token for token in text.split() if token not in my_stop)
-
-        doc = nlp(text)
-
-        doc = " ".join(token.orth_ for token in doc if not token.is_punct | token.is_space)
-        return doc
+        return text
 
     for _ in range(df.shape[0]):
         # merge subject and body strings
@@ -95,15 +98,13 @@ def train():
             return None  # or some other value
 
     df['Text'] = df['Text'].apply(converter)
-
     df['Text'] = df['Text'].apply(lambda x: get_only_chars(x))
 
     df = df.drop_duplicates('Text')
 
     ## set the by default to(in case there are no arguments later on, error handling):
-
-    # num_classes = df.Class.unique() # the number of classes we consider (since the dataset has many classes)
-    # sample_size = 5 # the number of labeled sampled we’ll require from the user
+    num_classes = df.Class.unique()  # no. of classes we consider (as dataset has many classes)
+    sample_size = 5  # the number of labeled sampled we’ll require from the user
 
     smallest_sample_size = min(df['Class'].value_counts())
 
@@ -119,7 +120,8 @@ def train():
         train_index = train.index.tolist()
 
         for i in range(1, num_classes):
-            train_2 = df_1[df_1["Class"] == np.unique(df_1['Class'])[i]].sample(sample_size)
+            #train_2 = df_1[df_1["Class"] == np.unique(df_1['Class'])[i]].sample(sample_size)
+            train_2 = df_1[df_1["Class"] == np.unique(df_1['Class'])[i]].sample(sample_size, replace = True)
             train = pd.concat([train, train_2], axis=0)
             train_index.extend(train_2.index.tolist())
 

@@ -90,32 +90,25 @@ def update_domain(intents, actions, entities, responses, data):
 # Each of the new intent is mapped to an action which will be triggered once the latter intent is predicted
 # First open the given actions.py file in append mode, add the template text and voila new action is updated !
 text = """
-
 class {}(Action):
-
     def name(self) -> Text:
         return "{}"
-
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-
         try:
             entities = tracker.latest_message['entities']
             intent = tracker.latest_message['intent']['name']
             table = get_table(intent)
             primary_key = final_pk[table][0]
-
             if(len(entities) == 0):
                 dispatcher.utter_message(template = '{}')
                 return []
-
             if(containsEntity(primary_key, entities)):
                 val = '*'
             else:
                 val = intent
                 allrecords, features = getData(query_formation(entities, "*",  final_table[table],table), table)
-
             records, features = getData(query_formation(entities, val, final_table[table], table), table)
             if val == "*":
                 allrecords = records
@@ -130,7 +123,6 @@ class {}(Action):
             else:
                 print(records)
                 return []
-
         except:
             dispatcher.utter_message(text = str(sys.exc_info()[1]))
             return []
@@ -161,7 +153,7 @@ def new_stories(story, intent_dict):
         action = "action_{}".format(intent)
         string = " {} path 1\n* {}\n  - {}\n\n".format(intent, intent, action)
         data.append(string)
-        actions.append(action) 
+        actions.append(action)
     story += data
     return story, actions
 
@@ -193,7 +185,7 @@ def lookups_to_md(data_md, entity_dict):
     for entity in entity_dict.keys():
         string_ent = " lookup:{}\n".format(entity)
         if FEATURES[entity] == 'int64' or entity in PRIMARY_KEY or 'date' in entity.lower():
-            continue          
+            continue
         for val in entity_dict[entity]:
             string_ent += "- {}\n".format(val)
         string_ent += "\n"
@@ -210,7 +202,7 @@ def intents_to_md(data_md, intent_dict):
         for ques in intent_dict[intent]:
             string_intent += "- {}\n".format(ques)
         string_intent += "\n"
-        data.append(string_intent)  
+        data.append(string_intent)
     data_md += data
     return data_md
 
@@ -221,8 +213,8 @@ def main():
     directory = '../botfiles'
     DATASET = new_data(data_name, directory)
 
-    # dict of columns in new data with corresponding dtypes 
-    DATASET.columns = [column.replace(" ", "_") for column in DATASET.columns] 
+    # dict of columns in new data with corresponding dtypes
+    DATASET.columns = [column.replace(" ", "_") for column in DATASET.columns]
 
     FEATURES = {col: DATASET[col].dtype for col in DATASET}
     threshold_value = 20
@@ -265,7 +257,7 @@ def main():
     new_story = '##'.join(story_text)
     f = open('../data/stories.md', "w")
     f.write(new_story)
-    f.close()    
+    f.close()
     # invoke actions
     current_actions = open('../actions.py', 'a', encoding='utf-8')
     utterances = add_action(Actions, current_actions)
@@ -274,8 +266,7 @@ def main():
     new_domain = update_domain(list(INTENTS.keys()), Actions, list(ENTITIES.keys()), utterances, domain)
     f = open('../domain.yml', "w")
     f.write(new_domain)
-    f.close() 
+    f.close()
 
 if __name__ == '__main__':
     main()
-	
