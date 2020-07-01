@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style2.css') }}">
+	<title>Predict Top Clients</title>
+	<style type="text/css">
+		body{
+			background-color: whitesmoke;
+			text-align: center;
+			font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+		}
+		.button{
+			background-color: black;
+			color: white;
+		}
+		table{
+			text-align: : center;
+			border: 1px solid black;
+			margin-left:auto;
+			margin-right:auto;
+			background-color: white;
+		}
+	</style>
+
+	<script type="text/javascript">
+		var reader = new XMLHttpRequest();
+	    var checkFor = "topNClientsGraph.html"; //Add the first link
+	    var second = "alter.html"; //Add the alternative
+
+	    reader.open('get', checkFor, true);
+	    reader.onreadystatechange = checkReadyState;
+
+	    function checkReadyState() {
+	        if (reader.readyState === 4) {
+	            if ((reader.status == 200) || (reader.status == 0)) {
+	            document.getElementById('site').src =  checkFor;
+	            }
+	            else {
+	           document.getElementById('site').src = second;
+	            return;
+	            }
+	        }
+	    }
+	    reader.send(null);
+	</script>
+</head>
+<body>
+<header class="site-header">
+		  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+			<div class="container">
+			  <a class="navbar-brand mr-4" href="/">Home</a>
+			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			  </button>
+			  <div class="collapse navbar-collapse" id="navbarToggle">
+				<div class="navbar-nav mr-auto">
+					<a class="nav-item nav-link" href="/pred_future">Investment Predictions</a>
+				  <a class="nav-item nav-link" href="{{ url_for('topNClients')}}">Predict Top Clients</a>
+                    <a class="nav-item nav-link" href="{{ url_for('compare')}}">Compare two Clients</a>
+				</div>
+			  </div>
+			</div>
+		  </nav>
+	</header>
+
+    	<h2 style="text-align: center; margin-top: 0%">Predict Top Clients</h2>
+
+	<form class="pred_top" action="{{ url_for('topNClients')}}" method="POST" target="topN_frame">
+		<!---<label>Legal Entity Name : </label>
+		<select name="lename">
+			{% for allnames in allLegalEntities %}
+				   <option value= "{{allnames}}" selected>{{allnames}}</option>"
+				  {% endfor %}
+			</select>--->
+
+
+		<label>Select no. of clients : </label>
+			<select name="number">
+				{% for i in range(1, allClientsNumber+1) %}
+				   <option value= {{i}} selected>{{i}}</option>"
+				  {% endfor %}
+			</select>
+			<label>Select the criteria to compare clients : </label>
+		    <select name = "criteria" >
+				   <option value= "Transaction" selected>Percentage of successful transaction</option>"
+				   <option value= "Mean" selected>Predicted Paid Amt Mean</option>"
+			</select>
+		<input class="button" type="submit" name="submit" value="Submit">
+	</form>
+	<br>
+
+    
+        
+		<iframe  id="site" name="topN_frame" src="" height="650px" width="90%"></iframe>
+       
+   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

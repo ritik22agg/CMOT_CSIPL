@@ -8,10 +8,10 @@ import os, json
 import time
 from datetime import datetime
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-# from listener_xg import handle_new_email
+from listener_xg import handle_new_email
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
@@ -22,12 +22,19 @@ from werkzeug.utils import secure_filename
 
 date_ = datetime.today().strftime('%Y-%m-%d')
 
-# from xgb_inp import inp
+from xgb_inp import inp, is_empty_sent
 from file_parser import allowed_ext, extract_text
-# from listener_xg import handle_new_email
-# from GLOVE_XGBOOST import train
+from listener_xg import handle_new_email
+from GLOVE_XGBOOST import train
 from dataload import loadData
 from voicebotfunc import talk
+from model import predict_top_clients
+from helper_functions import take_fields, give_clients_and_entities
+from forms import OutputForm, CompareForm
+from successfulTransactionCompare import comparareClientsTransaction
+from dict import get_dict
+from file1 import get_Ans
+from compf import plot_com, plot_pred
 
 
 app = Flask(__name__)
@@ -43,6 +50,11 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
 strs = []
+allData = give_clients_and_entities()
+allClients = allData[0]
+allLegalEntities = allData[1]
+final_result = predict_top_clients(len(allClients))
+d = get_dict()
 
 
 class User(db.Model, UserMixin):
@@ -277,46 +289,20 @@ def welcome():
 
 
         if (inputvalues['Subject']=="" and inputvalues['Message']==""):
-            msg = 'Empty email or invalid attachment - no prediction!'
-            return render_template('retrained.html', message=msg)
+            flash('Empty email or invalid attachment - no prediction!', 'danger')
+            return render_template('index1.html')
 
-        #m_class, ID = inputfunc(inputvalues['To'], inputvalues['From'], inputvalues['Subject'], inputvalues['Message'])
-        m_class, ID = inp(inputvalues['To'], inputvalues['From'], inputvalues['Subject'], inputvalues['Message'])
+        if is_empty_sent(inputvalues['Subject'], inputvalues['Message']) is True:
+            flash('Unable to read email.Please ensure that it is in English!', 'danger')
+            return render_template('index1.html')
+
+        m_class, ID,amt = inp(inputvalues['To'], inputvalues['From'], inputvalues['Subject'], inputvalues['Message'])
         mclass = m_class
         tid = ID
         return render_template("index1.html", m=m_class)
 
     else:
         return render_template("index1.html")
-
-
-@app.route('/submit', methods = ['POST'])
-def submit():
-    if request.method == 'POST':
-        file = request.files['data']
-        path = '../botfiles/' + file.filename
-        file.save(path)
-        #loadData(path)
-        q = 'python Backend/dynamictrain.py ' + path
-        #os.system(q)
-        #os.system('python Backend/train.py')
-        print("TRAINED !!!")
-
-    return redirect('/')
-
-
-@app.route('/mike', methods=['POST'])
-def mike():
-    if request.method == 'POST':
-        message, botmessage = talk()
-
-        strs.append(message)
-        strs.append(botmessage)
-
-        return redirect('/')
-        # loadtheModule(file.filename, file.filename)
-
-    return redirect('/')
 
 
 @app.route('/uploader', methods = ['GET', 'POST'])
@@ -481,15 +467,109 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-        
+@app.route('/submit', methods = ['POST'])
+def submit():
+    if request.method == 'POST':
+        file = request.files['data']
+        path = 'botfiles/' + file.filename
+        file.save(path)
+        #loadData(path)
+        q = 'python Backend/dynamictrain.py ' + path
+        #os.system(q)
+        #os.system('python Backend/train.py')
+
+    return redirect('/')
+
+
+@app.route('/mike', methods=['POST'])
+def mike():
+    if request.method == 'POST':
+        message, botmessage = talk()
+
+        strs.append(message)
+        strs.append(botmessage)
+
+        return redirect('/')
+        # loadtheModule(file.filename, file.filename)
+
+    return redirect('/')
+
+
 @app.route("/details", methods = ['GET'])
 def details():
     lisp = []
-    with open('../botfiles/records.json') as json_file: 
-        data = json.load(json_file) 
+    with open('../botfiles/records.json') as json_file:
+        data = json.load(json_file)
         for dic in data.values():
             lisp.append(dic)
     return render_template('details.html', lis = lisp)
+
+
+@app.route('/get_food/<cl>')
+def get_food(cl):
+    if cl not in d:
+        return jsonify([])
+    else:
+        return jsonify(d[cl])
+
+
+@app.route('/pred_future')
+def home():
+    form = OutputForm()
+    return render_template('index.html', form=form)
+
+
+@app.route("/compare")
+def compare():
+    form = CompareForm()
+    return render_template('compare.html', form=form)
+
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    form = OutputForm()
+    from_d = request.form['from'];
+    cname = form.clientName.data
+    lename = form.Legal.data;
+    # attribute_value = request.form['attribute_value'];
+    plot_pred(cname, lename, from_d)
+    return render_template('predict.html')
+
+
+@app.route("/script", methods=["POST"])
+def script():
+    form = CompareForm()
+    client1 = form.client1.data
+    client2 = form.client2.data
+    legal1 = form.Legal1.data
+    legal2 = form.Legal2.data
+    from_d = request.form['from'];
+    # attribute_value = request.form['attribute_value'];
+    plot_com(client1, client2, legal1, legal2, from_d)
+    return render_template('output.html')
+
+
+@app.route("/topNClients.html", methods=["POST", "GET"])
+def topNClients():
+    if request.method == 'POST':
+        number = request.form['number']
+        criteria = request.form['criteria']
+
+        if criteria == 'Mean':
+            get_Ans(number, final_result)
+
+        else:
+            comparareClientsTransaction(number, allClients)
+
+        return render_template('topNClientsGraph.html')
+
+    return render_template('topNClients.html', allClientsNumber=len(allClients))
+
+
+@app.route("/alter.html")
+def alter():
+    return render_template('alter.html')
+
 
 if __name__ == '__main__':
     db.create_all()

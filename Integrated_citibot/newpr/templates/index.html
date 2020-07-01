@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style2.css') }}">
+
+	<title>Future Prediction</title>
+	<style type="text/css">
+		.predict{
+			text-align: center;
+			float: right;
+			width : 75%;
+			}
+		.input{
+			text-align: center;
+			float: left;
+    		width :25%;
+			}
+	</style>
+	<!--<link rel="stylesheet" type="text/css" href="../static1/css/style.css">-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>	
+  
+	<script type="text/javascript">
+		var reader = new XMLHttpRequest();
+	    var checkFor = "predict.html"; //Add the first link
+	    var second = "alter.html"; //Add the alternative
+
+	    reader.open('get', checkFor, true);
+	    reader.onreadystatechange = checkReadyState;
+
+	    function checkReadyState() {
+	        if (reader.readyState === 4) {
+	            if ((reader.status == 200) || (reader.status == 0)) {
+	            document.getElementById('site').src =  checkFor;
+	            }
+	            else {
+	           document.getElementById('site').src = second;
+	            return;
+	            }
+	        }
+	    }
+	    reader.send(null);
+	</script>
+</head>
+<body>
+    <header class="site-header">
+		  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+			<div class="container">
+			  <a class="navbar-brand mr-4" href="/">Home</a>
+			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			  </button>
+			  <div class="collapse navbar-collapse" id="navbarToggle">
+				<div class="navbar-nav mr-auto">
+					<a class="nav-item nav-link" href="/pred_future">Investment Predictions</a>
+				  <a class="nav-item nav-link" href="{{ url_for('topNClients')}}">Predict Top Clients</a>
+                    <a class="nav-item nav-link" href="{{ url_for('compare')}}">Compare two Clients</a>
+				</div>
+			  </div>
+			</div>
+		  </nav>
+	</header>
+	<h3>Future Prediction</h3>
+	<div class="input">
+		<p>Please enter the details below :</p>
+		<form class="my-form" action="{{ url_for('predict')}}" method="POST" target="predict_frame">
+            {{ form.hidden_tag() }}
+		    <p>
+		        Client Name: {{ form.clientName() }}
+	        </p>
+			<p>
+		        Legal Entity: {{form.Legal() }}
+		    </p>
+
+			<label>From : </label>
+			<input type="date" name="from">
+			<br> <br>
+			<!--<select  name="attribute_value">
+				  {% for elem in listofatt%}
+				   <option value= "{{elem}}" SELECTED>{{elem}}</option>"
+				  {% endfor %}
+			</select>-->
+			<input class="button" type="submit" name="submit" value="Predict future">
+		</form>
+		<br><br>
+	</div>
+
+	<div class="predict">
+		<br><br>
+		<iframe id="site" name="predict_frame" src="" height=400px width=700px>
+		</iframe>
+	</div>
+
+    <br>
+
+  <script>
+      $(document).ready(function() {
+        $('#clientName').change(function() {
+
+          var cl = $('#clientName').val();
+
+          // Make Ajax Request and expect JSON-encoded data
+          $.getJSON(
+            '/get_food' + '/' + cl,
+            function(data) {
+
+              // Remove old options
+              $('#Legal').find('option').remove();                                
+
+              // Add new items
+              $.each(data, function(key, val) {
+                var option_item = '<option value="' + val + '">' + val + '</option>'
+                $('#Legal').append(option_item);
+              });
+            });
+        });
+      });
+    </script>
+
+</body>
+</html>
+
+   
+
