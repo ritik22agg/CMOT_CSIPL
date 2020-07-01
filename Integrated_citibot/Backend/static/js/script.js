@@ -124,7 +124,8 @@ $("#sendMic").on("click", function(e){
     const iconMic = searchMic.firstElementChild;
     var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     var recognition = new SpeechRecognition()
-    
+    // var prevText = ""
+
     recognition.lang = 'en-US'
 
     if(iconMic.classList.contains('fa-microphone')){
@@ -137,14 +138,18 @@ $("#sendMic").on("click", function(e){
     recognition.onstart = function(){
         iconMic.classList.remove("fa-microphone");
         iconMic.classList.add("fa-microphone-slash");
-        $(".keypad").focus()
-        $(".usrInput").val("...");
+        $(".usrInput").focus()
+        // if($(".usrInput").val() != null || $(".usrInput").val() != "" || $(".usrInput").val() != "Listening..."){
+        //     prevText = $(".usrInput").val();
+        // }
+        prevText = $(".usrInput").val();
+        // $(".usrInput").val("Listening...");
     }
     
     recognition.onend = function(){
         iconMic.classList.add("fa-microphone");
         iconMic.classList.remove("fa-microphone-slash");
-        $(".keypad").focus()
+        $(".usrInput").focus()
         console.log("Mic stopped !!");
     }
 
@@ -157,7 +162,20 @@ $("#sendMic").on("click", function(e){
         
         console.log(result)
         setTimeout(() => {
-            $(".usrInput").val(result);
+            if($(".usrInput").val() == ""){
+                console.log("empty")
+                $(".usrInput").val(result);
+            }
+            else if(result.toLowerCase().trim() === "go"){
+                console.log(prevText)
+                setUserResponse(prevText);
+                send(prevText);
+                e.preventDefault();
+            }
+            else{
+                console.log("third")
+                $(".usrInput").val(result);
+            }
         }, 500);
         
     }
@@ -202,7 +220,7 @@ function send(message) {
                 return;
             }
             setBotResponse(botResponse);
-
+            $(".usrInput").focus()
         },
         error: function(xhr, textStatus, errorThrown) {
 
@@ -223,7 +241,7 @@ function send(message) {
 
 //=================== set bot response in the chats ===========================================
 function setBotResponse(response) {
-
+    console.log(1)
     //display bot response after 500 milliseconds
     setTimeout(function() {
         hideBotTyping();
@@ -242,7 +260,7 @@ function setBotResponse(response) {
 
                 //check if the response contains "text"
                 if (response[i].hasOwnProperty("text")) {
-                    var BotResponse = '<img class="botAvatar" src="./static/img/sara_avatar.png"/><p class="botMsg">' + response[i].text + '</p><div class="clearfix"></div>';
+                    var BotResponse = '<img class="botAvatar" src="./static/img/sara_avatar.png"/><p class="botMsg">' + response[i].text +  '</p><div class="clearfix"></div>';
                     $(BotResponse).appendTo(".chats").hide().fadeIn(1000);
                 }
 
@@ -627,7 +645,133 @@ function hideBotTyping() {
 
 //====================================== Collapsible =========================================
 
+// function to create collapsible,
+// for more info refer:https://materializecss.com/collapsible.html
+function createCollapsible(data) {
+    //sample data format:
+    //var data=[{"title":"abc","description":"xyz"},{"title":"pqr","description":"jkl"}]
+    list = "";
+    for (i = 0; i < data.length; i++) {
+        item = '<li>' +
+            '<div class="collapsible-header">' + data[i].title + '</div>' +
+            '<div class="collapsible-body"><span>' + data[i].description + '</span></div>' +
+            '</li>'
+        list += item;
+    }
+    var contents = '<ul class="collapsible">' + list + '</uL>';
+    $(contents).appendTo(".chats");
+
+    // initialize the collapsible
+    $('.collapsible').collapsible();
+    scrollToBottomOfResults();
+}
+
 
 //====================================== creating Charts ======================================
 
+//function to create the charts & render it to the canvas
+function createChart(title, labels, backgroundColor, chartsData, chartType, displayLegend) {
 
+    //create the ".chart-container" div that will render the charts in canvas as required by charts.js,
+    // for more info. refer: https://www.chartjs.org/docs/latest/getting-started/usage.html
+    var html = '<div class="chart-container"> <span class="modal-trigger" id="expand" title="expand" href="#modal1"><i class="fa fa-external-link" aria-hidden="true"></i></span> <canvas id="chat-chart" ></canvas> </div> <div class="clearfix"></div>'
+    $(html).appendTo('.chats');
+
+    //create the context that will draw the charts over the canvas in the ".chart-container" div
+    var ctx = $('#chat-chart');
+
+    // Once you have the element or context, instantiate the chart-type by passing the configuration,
+    //for more info. refer: https://www.chartjs.org/docs/latest/configuration/
+    var data = {
+        labels: labels,
+        datasets: [{
+            label: title,
+            backgroundColor: backgroundColor,
+            data: chartsData,
+            fill: false
+        }]
+    };
+    var options = {
+        title: {
+            display: true,
+            text: title
+        },
+        layout: {
+            padding: {
+                left: 5,
+                right: 0,
+                top: 0,
+                bottom: 0
+            }
+        },
+        legend: {
+            display: displayLegend,
+            position: "right",
+            labels: {
+                boxWidth: 5,
+                fontSize: 10
+            }
+        }
+    }
+
+    //draw the chart by passing the configuration
+    chatChart = new Chart(ctx, {
+        type: chartType,
+        data: data,
+        options: options
+    });
+
+    scrollToBottomOfResults();
+}
+
+// on click of expand button, get the chart data from gloabl variable & render it to modal
+$(document).on("click", "#expand", function() {
+
+    //the parameters are declared gloabally while we get the charts data from rasa.
+    createChartinModal(title, labels, backgroundColor, chartsData, chartType, displayLegend)
+});
+
+//function to render the charts in the modal
+function createChartinModal(title, labels, backgroundColor, chartsData, chartType, displayLegend) {
+    //if you want to display the charts in modal, make sure you have configured the modal in index.html
+    //create the context that will draw the charts over the canvas in the "#modal-chart" div of the modal
+    var ctx = $('#modal-chart');
+
+    // Once you have the element or context, instantiate the chart-type by passing the configuration,
+    //for more info. refer: https://www.chartjs.org/docs/latest/configuration/
+    var data = {
+        labels: labels,
+        datasets: [{
+            label: title,
+            backgroundColor: backgroundColor,
+            data: chartsData,
+            fill: false
+        }]
+    };
+    var options = {
+        title: {
+            display: true,
+            text: title
+        },
+        layout: {
+            padding: {
+                left: 5,
+                right: 0,
+                top: 0,
+                bottom: 0
+            }
+        },
+        legend: {
+            display: displayLegend,
+            position: "right"
+        },
+
+    }
+
+    modalChart = new Chart(ctx, {
+        type: chartType,
+        data: data,
+        options: options
+    });
+
+}
