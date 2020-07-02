@@ -19,3 +19,4 @@ class CompareForm(FlaskForm):
     Legal1 = SelectField('Le1')
     client2 = SelectField('client2' , choices = lis)
     Legal2 = SelectField('Le2')
+

@@ -14,4 +14,3 @@ def get_dict():
 			d[key].append(df.iloc[i,2])
 	return d				
     
-	

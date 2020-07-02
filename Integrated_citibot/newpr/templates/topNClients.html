@@ -53,13 +53,12 @@
 <header class="site-header">
 		  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
 			<div class="container">
-			  <a class="navbar-brand mr-4" href="/">Home</a>
+			  <a class="navbar-brand mr-4" href="/home">Home</a>
 			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			  </button>
 			  <div class="collapse navbar-collapse" id="navbarToggle">
 				<div class="navbar-nav mr-auto">
-					<a class="nav-item nav-link" href="/pred_future">Investment Predictions</a>
 				  <a class="nav-item nav-link" href="{{ url_for('topNClients')}}">Predict Top Clients</a>
                     <a class="nav-item nav-link" href="{{ url_for('compare')}}">Compare two Clients</a>
 				</div>
@@ -85,11 +84,7 @@
 				   <option value= {{i}} selected>{{i}}</option>"
 				  {% endfor %}
 			</select>
-			<label>Select the criteria to compare clients : </label>
-		    <select name = "criteria" >
-				   <option value= "Transaction" selected>Percentage of successful transaction</option>"
-				   <option value= "Mean" selected>Predicted Paid Amt Mean</option>"
-			</select>
+			
 		<input class="button" type="submit" name="submit" value="Submit">
 	</form>
 	<br>
