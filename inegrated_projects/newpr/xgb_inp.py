@@ -101,7 +101,7 @@ def transform_sentence(text, EMBEDDINGS_INDEX):
 
 
 LE = joblib.load('./pkl_objects/labelencoder.pkl')
-CLF = joblib.load('./pkl_objects/clf_40new.pkl')
+CLF = joblib.load('./pkl_objects/clf.pkl')
 
 
 def find_id(sub):
@@ -224,4 +224,22 @@ def inp(emailto, emailfrom, subj, bod):
 
 k, ID, amt = inp("fvf", "defrfg", "payment processed",
             "hi, the payment for amt. of usd 34535 was paid successfully for trans no. 21879244.")
+print(k, type(k), ID, type(ID), amt, type(amt))
+
+
+k, ID, amt = inp("fvf", "defrfg", "",
+            "hi, the payment for amt. of usd 34535 id being processed for trans no. 21879244.")
+print(k, type(k), ID, type(ID), amt, type(amt))
+
+k, ID, amt = inp("fvf", "defrfg", "The transaction 123213 failed",
+            "Due to insufficient funds in savings account, the transaction 1234567 have been failed")
+print(k, type(k), ID, type(ID), amt, type(amt))
+
+
+k, ID, amt = inp("fvf", "defrfg", "The transaction 123213 is pending",
+            "Due to insufficient funds in savings account, the check no. 1623624t is bounced")
+print(k, type(k), ID, type(ID), amt, type(amt))
+
+k, ID, amt = inp("fvf", "defrfg", "Update on trans id 4623331",
+            "Due to insufficient funds in savings account, the check no. 1623624t is bounced")
 print(k, type(k), ID, type(ID), amt, type(amt))
