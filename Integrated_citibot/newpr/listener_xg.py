@@ -79,7 +79,7 @@ def handle_new_email(mail_path):
         email.close()
         #print(encoded_mail)
 
-    outputclass, tid = inp(to_add, from_add, sub, body)
+    outputclass, tid, amt = inp(to_add, from_add, sub, body)
 
     #add_to_db(to_add, from_add, received_date, sub, tid, body, outputclass)
     #move_email(mail_path, outputclass)

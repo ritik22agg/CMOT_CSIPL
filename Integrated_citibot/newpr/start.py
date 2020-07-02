@@ -3,6 +3,7 @@ Flask Application to start Smart Email Tracker
 python start.py
 on localhost:5000
 """
+import pandas as pd
 import csv
 import os, json
 import time
@@ -15,12 +16,12 @@ from listener_xg import handle_new_email
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from flask_login import LoginManager, login_user, UserMixin, current_user, \
-login_required, logout_user
+from flask_login import LoginManager, login_user, UserMixin, current_user, login_required, logout_user
 from werkzeug.utils import secure_filename
 
 
-date_ = datetime.today().strftime('%Y-%m-%d')
+#date_ = datetime.today().strftime('%Y-%m-%d')
+date_ = datetime.today().ctime()
 
 from xgb_inp import inp, is_empty_sent
 from file_parser import allowed_ext, extract_text
@@ -28,14 +29,12 @@ from listener_xg import handle_new_email
 from GLOVE_XGBOOST import train
 from dataload import loadData
 from voicebotfunc import talk
-from model import predict_top_clients
-from helper_functions import take_fields, give_clients_and_entities
+from model import model_call , predict_top_clients
+from helper_functions import give_last_date, take_fields, give_dates, give_clients_and_entities
 from forms import OutputForm, CompareForm
-from successfulTransactionCompare import comparareClientsTransaction
+from compf import plot_pred, plot_com
 from dict import get_dict
-from file1 import get_Ans
-from compf import plot_com, plot_pred
-
+from compareTopN import plot_topN
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///emails.sqlite3'
@@ -53,7 +52,7 @@ strs = []
 allData = give_clients_and_entities()
 allClients = allData[0]
 allLegalEntities = allData[1]
-final_result = predict_top_clients(len(allClients))
+final_result = predict_top_clients(len(allClients), allClients)
 d = get_dict()
 
 
@@ -171,46 +170,18 @@ def upload_file():
    return render_template('upload.html')
 
 
-def retrain():
-    newDict1 = {'Complete', 'Failed', 'Request', 'General', 'Pending', 'Processing',
-               'Request'}
-    newDict2 = {}
-    ct = 0
-    for mail in mails.query.all():
-        if mail.m_class not in newDict1:
-            newDict2.add(mail.m_class)
-    for mail in mails.query.all():
-        if mail.m_class in newDict2 and mails.query.filter(mails.m_class == mail.m_class).count() > 39:
-            newDict1.add(mail.m_class)
-    with open('emaildataset.csv', 'a') as f:
-        f.write('\n')
-        f.close()
-    with open('emaildataset.csv', 'a') as f:
-        out = csv.writer(f)
-        for mail in mails.query.all():
-            if mail.m_class in newDict1:
-                ct += 1
-                out.writerow([mail.mfrom, mail.mto, mail.msubject, mail.mbody, mail.ID, mail.mdate, mail.m_class])
-                db.session.delete(mail)
-                db.session.commit()
-        f.close()
-    msg = '' + str(ct) + ' mail(s) sent for retraining successfully!'
-    train()
-    return render_template('retrained.html', message=msg)
-
-
-
 @app.route('/retrain')
 def retrain():
     """
     retrain model only if at least 40 mails of new classes
     """
-    org_classes = {'Complete', 'Failed', 'Request', 'General', 'Pending', 'Processing'}
+    df = pd.read_csv("./emaildataset.csv", usecols=['Class'])
+    org_classes = df.Class.unique()
     new_classes = set()
     new_classes_40 = set()
     ctr = 0
     for mail in mails.query.all():
-        curclass = str(mail.m_class).capitalize()
+        curclass = str(mail.m_class)
         if curclass not in org_classes:
             new_classes.add(mail.m_class)
     for mail in mails.query.all():
@@ -222,7 +193,7 @@ def retrain():
     with open('emaildataset.csv', 'a') as f:
         out = csv.writer(f)
         for mail in mails.query.all():
-            if str(mail.m_class).capitalize() in org_classes or mail.m_class in new_classes_40:
+            if str(mail.m_class) in org_classes or mail.m_class in new_classes_40:
                 ctr += 1
                 out.writerow([mail.mfrom, mail.mto, mail.msubject, mail.mbody, mail.ID, mail.mdate, mail.m_class])
                 db.session.delete(mail)
@@ -363,7 +334,7 @@ def new_class():
         db.session.commit()
         # time.sleep(4)
         flash('Record was successfully added')
-        return render_template("index1.html")
+        return redirect(url_for('welcome'))
     else:
         return render_template("new_class.html")
 
@@ -553,14 +524,7 @@ def script():
 def topNClients():
     if request.method == 'POST':
         number = request.form['number']
-        criteria = request.form['criteria']
-
-        if criteria == 'Mean':
-            get_Ans(number, final_result)
-
-        else:
-            comparareClientsTransaction(number, allClients)
-
+        plot_topN(final_result, allClients, number)
         return render_template('topNClientsGraph.html')
 
     return render_template('topNClients.html', allClientsNumber=len(allClients))

@@ -1,24 +1,12 @@
 
 from flask import Flask, render_template, url_for, request, jsonify
-import pickle
-import plotly.express as px
-import plotly.io as pio
-from datetime import date
-import datetime
-from dateutil.relativedelta import relativedelta
 from model import model_call , predict_top_clients
-import pandas as pd
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
-import datetime
-import numpy as np
 from helper_functions import give_last_date, take_fields, give_dates, give_clients_and_entities
 from forms import OutputForm, CompareForm
-import csv
-from successfulTransactionCompare import comparareClientsTransaction
+from compf import plot_pred, plot_com
 from dict import get_dict
-from file1 import get_Ans
-from compf import plot_com, plot_pred
+from compareTopN import plot_topN
+
 
 
 app = Flask(__name__)
@@ -30,7 +18,7 @@ allData=give_clients_and_entities()
 allClients=allData[0]
 allLegalEntities=allData[1]
 listofatt=take_fields()
-final_result = predict_top_clients(len(allClients))
+final_result = predict_top_clients(len(allClients), allClients)
 
 d = get_dict()
 
@@ -47,7 +35,7 @@ def get_food(cl):
 	else:
 		return jsonify(d[cl])
 
-		
+
 @app.route('/')
 @app.route('/home')
 def home():
@@ -57,8 +45,8 @@ def home():
 
 @app.route("/compare")
 def compare():
-	form = CompareForm()
-	return render_template('compare.html', form = form)
+	form=CompareForm()
+	return render_template('compare.html', form=form)
 
 
 @app.route('/predict',methods=['POST'])
@@ -68,42 +56,36 @@ def predict():
 	cname = form.clientName.data
 	lename = form.Legal.data;
 	#attribute_value = request.form['attribute_value'];
-	plot_pred(cname,lename,from_d)
+	plot_pred(cname, lename, from_d)
+	
+	
 	return render_template('predict.html')
+	   
 
 
-
-
+      
 @app.route("/script", methods = ["POST"])
 def script():
-	form = CompareForm()
+	form=CompareForm()
 	client1 = form.client1.data
 	client2 = form.client2.data
-	legal1 = form.Legal1.data
-	legal2 = form.Legal2.data
+	legal1 = form.Legal1.data;
+	legal2 = form.Legal2.data;
 	from_d = request.form['from'];
-	#attribute_value = request.form['attribute_value'];
-	plot_com(client1,client2,legal1,legal2,from_d)
+
+	plot_com(client1, client2, legal1 ,legal2 ,from_d)
+	
 	return render_template('output.html')
 
 
 @app.route("/topNClients.html",  methods = ["POST", "GET"])
 def topNClients() :
-
+	
 	if request.method == 'POST' :
 		number = request.form['number']
-		criteria= request.form['criteria']
-
-		if criteria == 'Mean' :
-			get_Ans(number,final_result)
-
-		else :
-			comparareClientsTransaction(number, allClients)
-
-
+		plot_topN(final_result, allClients, number)
 		return render_template('topNClientsGraph.html')
-
-
+    
 	return render_template('topNClients.html', allClientsNumber=len(allClients))
 
 
@@ -114,4 +96,4 @@ def alter() :
 
 
 if __name__ == '__main__':
-      app.run(debug=True)
+      app.run(debug=True)    
