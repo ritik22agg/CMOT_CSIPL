@@ -14,7 +14,7 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
 from dbconnect import query_formation, getData
 import pandas as pd
-import sys, os, pickle, json
+import sys, os, pickle, json, datetime
 
 
 ## database code 
@@ -111,10 +111,17 @@ def record_finder(entities, table):
 
     return records
 
+# def getstring(val, tup):
+#     if 'date' in tup.lower():
+#         val = val.strftime('%Y-%m-%d')
+#         print(type(val))
+#     # print((str(val)))
+#     return val
+
 def saveRecords(table, records):
     features = final_table[table]
     store = {i:{tup:val for tup,val in zip(features,records[i])} for i in range(len(records))}
-    with open('./botfiles/records.json', 'w') as fp:
+    with open('../CMOT_CSIPL/Integrated_citibot/botfiles/records.json', 'w') as fp:
         json.dump(store, fp)
     return 
 
@@ -313,7 +320,10 @@ class actionClientName(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Client_Name')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Client_Name')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -329,15 +339,15 @@ class actionClientName(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The client name is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
+                # return []
             else:
+                records = [rec[0] for rec in records]
                 records = list(set(records))
-                print(records)
-                records = [tup[0] for tup in records]
-                dispatcher.utter_message(text="The Client names are {}".format(','.join(records)))
+                dispatcher.utter_message(text="The Client names are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -361,7 +371,10 @@ class actionAccountID(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Account_ID')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Account_ID')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -377,12 +390,14 @@ class actionAccountID(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The account id is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The ids are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -406,7 +421,10 @@ class actionLegalEntity(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Legal_Entity')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Legal_Entity')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -422,15 +440,15 @@ class actionLegalEntity(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The legal entity is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
+                records = [rec[0] for rec in records]
                 records = list(set(records))
                 print(records)
-                records = [tup[0] for tup in records]
-                dispatcher.utter_message(text="The legal entities are {}".format(','.join(records)))
+                dispatcher.utter_message(text="The legal entities are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -454,7 +472,10 @@ class actionCurrency(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Currency')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Currency')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -470,12 +491,14 @@ class actionCurrency(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The currency is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The Currenies are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -499,7 +522,10 @@ class actionPaymentType(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Payment_Type')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Payment_Type')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -515,12 +541,14 @@ class actionPaymentType(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The payment type is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The Status are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -544,7 +572,10 @@ class actionPaidAmount(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Paid_Amount')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Paid_Amount')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -561,12 +592,14 @@ class actionPaidAmount(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The paid amount is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The amounts are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -590,7 +623,10 @@ class actionPaymentDate(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Payment_Date')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Payment_Date')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -606,12 +642,14 @@ class actionPaymentDate(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The payment date is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The dops are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -635,7 +673,10 @@ class actionPaymentStatus(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Payment_Status')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Payment_Status')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -651,12 +692,14 @@ class actionPaymentStatus(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The payment status is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The status are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -680,7 +723,10 @@ class actionPendingAmount(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Pending_Amount')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Pending_Amount')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -696,12 +742,14 @@ class actionPendingAmount(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The pending amount is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The amounts are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -725,7 +773,10 @@ class actionComments(Action):
             primary_key = final_pk[table][0]
 
             if(len(entities) == 0):
-                dispatcher.utter_message(template = 'utter_Comments')
+                if(tracker.get_slot('Account_ID') is not None):    
+                    dispatcher.utter_message(template = 'utter_Comments')
+                else:
+                    dispatcher.utter_message(text = "Please enter a valid transaction ID !")
                 return []
 
             if(containsEntity(primary_key, entities)):
@@ -741,12 +792,14 @@ class actionComments(Action):
             if len(records) == 0:
                 raise ValueError("No record for this query !!!")
             elif len(records) == 1:
-                features = {tup[0]:val for tup,val in zip(features,records[0])}
-                print(records, features)
+                features = {tup[0]:val for tup,val in zip(features,allrecords[0])}
+                print(allrecords, features)
                 dispatcher.utter_message(text="The comments is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The Comments are {}.".format(', '.join(records)))
                 return []
 
         except:
@@ -768,7 +821,7 @@ class actionSource(Action):
             intent = tracker.latest_message['intent']['name']
             table = get_table(intent)
             primary_key = final_pk[table][0]
-
+            print(Table)
             if(len(entities) == 0):
                 print(Table)
                 dispatcher.utter_message(template = 'utter_Source')
@@ -794,7 +847,9 @@ class actionSource(Action):
                 dispatcher.utter_message(text="The source is  "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
                 return [SlotSet("{}".format(slot), features[slot.lower()]) for slot in final_table[table]]
             else:
-                print(records)
+                records = [rec[0] for rec in records]
+                records = list(set(records))
+                dispatcher.utter_message(text="The sources are {}.".format(', '.join(records)))
                 return []
 
         except:
