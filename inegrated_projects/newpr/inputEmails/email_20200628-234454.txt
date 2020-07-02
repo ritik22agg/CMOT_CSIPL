@@ -1,0 +1,7 @@
+To: siddharth.varshney21@gmail.com 
+From: xyz@xyz.com 
+Subject: status update : 123345 
+
+Email_Body: the transaction is in progress. 
+class: Pending 
+Date: 2020-06-28 

@@ -1,0 +1,4 @@
+Received Amount
+Delivered Amount
+Net Amount
+Paid Amount
