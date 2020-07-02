@@ -23,14 +23,12 @@ from wordfile import func
 from xgb_inp import EMBEDDINGS_INDEX
 
 
-seed(40)
-np.random.seed(40)
-
-
 def train():
     '''
     Load the dataset, clean the subject and body, then do data sampling for training the model.
     '''
+    seed(40)
+    np.random.seed(40)
     df = pd.read_csv("./emaildataset.csv", usecols=['Subject', 'Body', 'Class'])
     df.head()
 
@@ -112,7 +110,7 @@ def train():
     df['Text'] = df['Text'].apply(lambda x: get_only_chars(x))
 
     df = df.drop_duplicates('Text')
-    #df = df.sample(frac=1).reset_index(drop=True)
+    df = df.sample(frac=1).reset_index(drop=True)
 
 
     ## set the by default to(in case there are no arguments later on, error handling):
@@ -130,7 +128,7 @@ def train():
         train_index = train_set.index.tolist()
 
         for i in range(1, num_classes):
-            train_2 = df_1[df_1["Class"] == np.unique(df_1['Class'])[i]].sample(sample_size, replace = True)
+            train_2 = df_1[df_1["Class"] == np.unique(df_1['Class'])[i]].sample(sample_size)
             #train_2 = df_1[df_1["Class"] == np.unique(df_1['Class'])[i]]
             # .sample(sample_size, replace = True)
             train_set = pd.concat([train_set, train_2], axis=0)
