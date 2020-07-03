@@ -11,7 +11,7 @@ Project 2: Automate the process of classification of incoming emails based on th
 Project 3: Predict future business with clients based on past data for better decision making
 
 <p align="center">
-  For details on all the ML models tried and tested, model comparisons, UI features and better understanding of system workflow, please refer to <a href="https://docs.google.com/presentation/d/1kLh_WCi8Xh1EninU81dXtK7xs1VSrnS2v5qASRCsdik/edit#slide=id.g8af3e4b249_0_5">this document</a>.
+  For details on all the ML models tried and tested, model comparisons, UI features and better understanding of system workflow, please refer to <a href="https://docs.google.com/presentation/d/1_rZYhA79ftswJlvxQB3q4CYpWWSi_xkYOUXNH_5woyY/edit#slide=id.p40">this document</a>.
 </p>
 
 ## 🛠 Installation and quickstart:
