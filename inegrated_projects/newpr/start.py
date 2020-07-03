@@ -313,7 +313,6 @@ def upload_file_1():
       mclass=m_class
       tid=id
       return render_template("index1.html", m=m_class)
-
     else:
       return render_template("index1.html")
 
@@ -387,7 +386,7 @@ def findthread():
     """
     if request.method == "POST":
         id = str(request.form['transacid'])
-        return render_template('show_all.html', mails=mails.query.filter(mails.mdate == id and mails.mto == current_user.email).all())
+        return render_template('show_all.html', mails=mails.query.filter(mails.ID == id and mails.mto == current_user.email).all())
     else :
         return render_template('findthread.html')
 
