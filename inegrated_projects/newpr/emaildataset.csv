@@ -958,3 +958,22 @@ Stefanie@DESHAW.com,Elena@CitiBankHongKong.com,Request to send details of transa
 Mike@DEUTSCHEBANK.com,Isabella@CitiBankNewYork.com,Payment received for transaction : 026160 and now processing.,grateful to you for transferring the payment to my account yesterday. I would like to inform you that is is currently in process. Thanks and regards.,26160,11-10-2019,Processing
 David@BNYMellon.com,Suhail@CitiBankSingapore.com,Handling the transaction 246211 after payment.,"Sincere greetings, I am glad to tell you that I have finally been granted the pre-approved amount through transaction 246211 . It is now being processed. I am grateful for your support. Warm regards.",246211,01-03-2019,Processing
 Adam@SBI.com,Shubhanshu@CitiBankPune.com,Received full payment for transaction no. 264586,"To whom it may concern, I have successfully acquired payment for the transaction 264586 . I am beholden to your cooperation. ",264586,29-02-2020,Complete
+Mike@BNYMellon.com,Rahul@CitiBankPune.com, Transaction 608234 Complete,"Hi, Hope you are well.Wanted to inform you that transaction has been completed successfully.Thanks for your assistance!Mike ",608234,Thu Jul  2 17:06:17 2020,Failed
+xyz@xyz.com,siddharth.varshney21@gmail.com,The transaction ID: 234567 has failed,failed,234567,Thu Jul  2 17:02:38 2020,Failed
+abc@gmail.com,adityas29@outlook.com,payment processed,"hi, the payment for amt. of usd 34535 was paid successfully for trans no. 12345",12345,Fri Jul  3 13:10:09 2020,Complete
+,adityas29@outlook.com,Payment in processing,"hi, the payment for amt. of usd 34535 id being processed for trans no. 123456.",123456,Fri Jul  3 13:10:09 2020,Processing
+abc@gmail.com,adityas29@outlook.com,"payment processed,","hi, the payment for amt. of usd 34535 was paid successfully for trans no. 12345.
+",12345,Fri Jul  3 13:10:09 2020,Complete
+abc@gmail.com,adityas29@outlook.com,Payment in processing,"hi, the payment for amt. of usd 34535 id being processed for trans no. 123456.
+",123456,Fri Jul  3 13:10:09 2020,Processing
+,adityas29@outlook.com,Transaction id 123,"
+-----------Extracted from Attachment-----------
+From: phillip.allen@jpmorgan.com
+To: tim.belden@citisingapore.com
+
+Subject: Payment in Progress 101165
+
+Payment of 471862128 CAD to account id 101165 has been made on 19/02/2020 and is in progress.
+Please acknowledge.
+
+Thanks.",123,Fri Jul  3 13:10:09 2020,Processing

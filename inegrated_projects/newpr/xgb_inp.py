@@ -243,3 +243,7 @@ print(k, type(k), ID, type(ID), amt, type(amt))
 k, ID, amt = inp("fvf", "defrfg", "Update on trans id 4623331",
             "Due to insufficient funds in savings account, the check no. 1623624t is bounced")
 print(k, type(k), ID, type(ID), amt, type(amt))
+
+k, ID, amt = inp("fvf", "defrfg", "",
+            "payment of CAD amount 123213 has been made on account ID 12333 and is in progress")
+print(k, type(k), ID, type(ID), amt, type(amt))

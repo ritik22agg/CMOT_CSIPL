@@ -1,0 +1,8 @@
+To: adityas29@outlook.com 
+From: abc@gmail.com 
+Subject: payment processed, 
+
+Email_Body: hi, the payment for amt. of usd 34535 was paid successfully for trans no. 12345.
+ 
+class: Complete 
+Date: Fri Jul  3 13:10:09 2020 

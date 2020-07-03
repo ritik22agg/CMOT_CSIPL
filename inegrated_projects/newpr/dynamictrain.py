@@ -54,7 +54,7 @@ def update_domain(intents, actions, entities, responses, data):
     pointer_intent = data.find("intents:")
     string = ""
     for intent in intents:
-        string += "  - {}\n".format(intent)
+        string += "  - {}:\n      triggers: action_{}\n".format(intent, intent)
     data = data[:pointer_intent+9] + string + data[pointer_intent+9:]
     # update actions list 
     pointer_actions = data.find("actions:")
@@ -114,9 +114,9 @@ class {}(Action):
                 val = '*'
             else:
                 val = intent
-                allrecords, features = getData(query_formation_dy(entities, "*",  final_table[table],table), table)
+                allrecords, features = getData(query_formation_dynamic(entities, "*",  final_table[table],table), table)
 
-            records, features = getData(query_formation(entities, val, final_table[table], table), table)
+            records, features = getData(query_formation_dynamic(entities, val, final_table[table], table), table)
             if val == "*":
                 allrecords = records
             saveRecords(table, allrecords)
@@ -125,8 +125,9 @@ class {}(Action):
             elif len(records) == 1:
                 features = {{tup[0]:val for tup,val in zip(features,records[0])}}
                 print(records, features)
+                features['Source'] = features.pop('source')
                 dispatcher.utter_message(text="{} "+ str(features[intent.lower()]) + " for the given record with id "+ str(features[primary_key.lower()]) )
-                return [SlotSet("{{}}".format(slot), features[slot.lower()]) for slot in final_table[table]]
+                return [SlotSet("{{}}".format(slot), features[slot.lower()]) for slot in features.keys()]
             else:
                 print(records)
                 return []
@@ -154,7 +155,7 @@ def add_action(Action, file):
 # name : ## {intent} path
 def new_stories(story, intent_dict):
     """the current stories.md file has storylines with respect to a classified intent"""
-    story[-1] = story[-1] + '\n'
+    story[-1] = story[-1] + '\n\n'
     data = []
     actions = []
     for intent in intent_dict:
@@ -222,7 +223,7 @@ def main():
     DATASET = new_data(data_name, directory)
 
     # dict of columns in new data with corresponding dtypes 
-    DATASET.columns = [column.replace(" ", "_") for column in DATASET.columns] 
+    DATASET.columns = [column.replace(" ", "_").lower() for column in DATASET.columns] 
 
     FEATURES = {col: DATASET[col].dtype for col in DATASET}
     threshold_value = 20
@@ -232,6 +233,7 @@ def main():
     INTENTS = {col:get_questions(col, ENTITIES, PRIMARY_KEY) for col in FEATURES.keys()}
 
     # making a dictionary of tables with corresponding intents for query based retrieval
+    data_name = os.path.basename(data_name)
     table = os.path.splitext(data_name)[0]
     if 'dict.pkl' not in os.listdir('../data'):
         information_table = {}
@@ -253,12 +255,12 @@ def main():
     s = nlu.read().split('##')
     nlu_intent = intents_to_md(s, INTENTS)
     nlu_lookup = lookups_to_md(nlu_intent, ENTITIES)
-    # nlu_synonyms = synonyms_to_md(nlu_lookup, ENTITIES)
+    # # nlu_synonyms = synonyms_to_md(nlu_lookup, ENTITIES)
     new_nlu = '##'.join(nlu_lookup)
     f = open('../data/nlu.md', "w")
     f.write(new_nlu)
     f.close()
-    # invoke stories
+    # # invoke stories
     story = open('../data/stories.md', 'r')
     s = story.read().split('##')
     story_text, Actions = new_stories(s, INTENTS)
@@ -266,10 +268,10 @@ def main():
     f = open('../data/stories.md', "w")
     f.write(new_story)
     f.close()    
-    # invoke actions
+    # # invoke actions
     current_actions = open('../actions.py', 'a', encoding='utf-8')
     utterances = add_action(Actions, current_actions)
-    # invoke domain
+    # # invoke domain
     domain = open('../domain.yml', 'r').read()
     new_domain = update_domain(list(INTENTS.keys()), Actions, list(ENTITIES.keys()), utterances, domain)
     f = open('../domain.yml', "w")

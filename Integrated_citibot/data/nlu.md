@@ -99,6 +99,14 @@
 - How are things going on with the agreement [103180](Account_ID) id
 - For [103490](Account_ID) agreement give me the details pls
 - For the id [103490](Account_ID) tell me the status 
+- give us the payment status for id [222222](Account_ID)
+- please give the status of payment
+- status of payment for the same
+- Give me something about the current status of the transaction
+- For the id [103923](Account_ID) provide me the details of the current status of payment 
+- for the transaction [18331](Account_ID) give me status of agreement deal 
+- Give me the status of payment report for the transaction
+- Give me details about the status of the payment for agreement [103510](Account_ID) id
 
 
 ## intent:Paid_Amount
@@ -115,6 +123,12 @@
 - How much amount transferred in the agreement [103180](Account_ID) id
 - For [103490](Account_ID) agreement give me the paid amount details
 - For the id [103440](Account_ID) tell me the payment made
+- give us the paid amount for the same
+- please provide the amount paid in the transaction
+- please mention the amount paid in the deal
+- Give me the money paid for the transaction
+- for the agreement id [18391](Account_ID) give me transaction amount 
+- Tell me the details for the transaction amount with id [333333](Account_ID)
 
 
 ## intent:Pending_Amount
@@ -135,22 +149,18 @@
 - How much amount needs to be transferred in the agreement [103180](Account_ID) id
 - For [103490](Account_ID) agreement give me the pending amount details
 - For the id [103440](Account_ID) tell me the pending amount
+- give us the pending amount for the same
+- please provide the amount to be paid in the transaction
+- please mention the amount pending in the deal
+- Give me the money to be paid for the transaction for agreement [103520](Account_ID)
+- Give me details about the payment left for agreement [103510](Account_ID) id
+- for the agreement id [18391](Account_ID) give me report of transaction amount pending  
 
 ## intent:Payment_Type
 - payment type for id [105135](Account_ID)
-- What is the payment type with agreement id [105150](Account_ID)
-- What is the payment type for transaction with [105049](Account_ID)
-- payment type for agreement with [105140](Account_ID) id
-- Give me the payment type details about agreement with [105120](Account_ID)
-- Tell me the p t for the [105170](Account_ID)
-- Can you show me the payment type for [105140](Account_ID)
-- I request you to provide me the p t made with [105122](Account_ID)
-- Could you please give me the p t insights regarding concurrence with [105061](Account_ID) id
-- Please check the payment type of [105170](Account_ID)
-- Brief me about the pt for the accord with [105122](Account_ID)
-- Please show me the payment type for transaction with id [105120](Account_ID)
 
 ## intent:Currency
+- whats the currency used ?
 - currency used for transaction with id [105146](Account_ID)
 - What is the currency used agreement id [105050](Account_ID)
 - Which currency is involved in transaction with [105135](Account_ID)
@@ -232,9 +242,11 @@
 - Tell me about the client names for whom payments were [paid]{"entity":"Payment_Status", "value":"Fully paid"} between [2020-02-02](Payment_Date) and [2020-06-06](Payment_Date)
 - Client Names whose payments were [paid]{"entity":"Payment_Status", "value":"Fully paid"} between [2020-06-06](Payment_Date) and [2020-01-06](Payment_Date)
 - client companies that performed payments between [2020-02-23](Payment_Date) and [2020-02-23](Payment_Date) and the payments are [failed]{"entity":"Payment_Status", "value":"Rejected"}
-- client details for transactions that were [Failed]{"entity":"Payment_Status", "value":"Rejected"} from [2020-02-02](Payment_Date) to [2020-06-06](Payment_Date)
+- client details for transactions that were [failed]{"entity":"Payment_Status", "value":"Rejected"} from [2020-02-02](Payment_Date) to [2020-06-06](Payment_Date)
 - give info about client names for whom payments were [paid]{"entity":"Payment_Status", "value":"Fully paid"} between [2020-02-02](Payment_Date) and [2020-06-06](Payment_Date)
 - tell Client Names whose payments were [failed]{"entity":"Payment_Status", "value":"Rejected"} between [2020-06-06](Payment_Date) and [2020-01-06](Payment_Date)
+- Give me the clients whose payments got [failed]{"entity":"Payment_Status", "value":"Rejected"} in between the 4th and 6th april 2020
+
 
 ## intent:Legal_Entity
 - legal entity for id [105126](Account_ID)
@@ -351,6 +363,7 @@
 - give all the details for given response please
 - tell me more info details for the records
 - tell more info
+- give more information
 
 <!-- ## intent:all_the_clients
 - give me the client names for all the payments that failed

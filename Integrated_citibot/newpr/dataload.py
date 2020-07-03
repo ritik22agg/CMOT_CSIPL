@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import mysql.connector
-import traceback,json
+import traceback,json, os
 
 def isfound(data):
     mydb = mysql.connector.connect(
@@ -22,7 +22,6 @@ def isfound(data):
         o_cols = []
         for entry in table_cols:
             o_cols.append(entry[0])
-        print(o_cols)
         for col in data.columns:
             if col.lower() not in o_cols:
                 chk = False
@@ -37,6 +36,10 @@ def isfound(data):
 def loadtheModule(filename):
     
     data = pd.read_csv(filename)
+    print(filename)
+    filename = os.path.basename(filename)
+    if 'source' not in data.columns:
+        data['source'] = str(filename.split('.')[0]) + " table"
 #     data = data.drop(['Unnamed: 0'], axis = 1)
 #     data = data[ : 10]
     table = isfound(data)
@@ -60,14 +63,14 @@ def loadtheModule(filename):
             elif 'date' in cols.lower():
                 create += ' date'
             else:
-                create += ' varchar(30)'
+                create += ' varchar(300)'
     
             if cnt < len(data.columns)-1 :
                 create += ','
             cnt = cnt + 1
     
         create += ');'
-        
+        print(create)
         cursor.execute(create)
         mydb.commit()
     
@@ -185,5 +188,5 @@ def loadData(data_name):
     elif data_name.endswith('.json'):
         loadJson(data_name)
 
-if __name__=='__main__':
-    loadData('dataset.csv')
+#if __name__=='__main__':
+    #loadData('dataset.csv')

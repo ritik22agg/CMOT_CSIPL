@@ -24,15 +24,16 @@ def main():
     print("Processes have been killed!!\n")
     print("==========================================")
 
+    # subprocess.call('cd ..', shell=True)
 # train the model
-    subprocess.run('rasa train', shell=True, check=True)
+    subprocess.run('rasa train', shell=True, check=True, cwd= '../')
 
     print("==========================================\n")
     print("Model has been trained!!\n")
     print("==========================================")
 
 # run the shell
-    subprocess.run('rasa run -m models --enable-api --cors "*" --debug', shell=True, check=True)
+    subprocess.run('rasa run -m models --enable-api --cors "*" --debug', shell=True, check=True, cwd= '../')
 
 
 

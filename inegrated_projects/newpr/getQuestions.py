@@ -4,6 +4,8 @@ def add_ques1(intents, entity , values):
     questions = []
     
     # for value in values:
+    questions.append("for id [{}]({}), what is the {}".format(random.choice(values),entity, (intents[0])))
+    questions.append("for id [{}]({}), tell me the {}".format(random.choice(values),entity, (intents[0])))
     questions.append("{} for id [{}]({})".format((intents[0]),random.choice(values),entity))
     questions.append("What is the {} with agreement id [{}]({})".format((intents[0]),random.choice(values),entity))
     questions.append("What is the {} for transaction with [{}]({})".format((intents[0]),random.choice(values),entity))
@@ -48,12 +50,14 @@ def get_questions(intent,entities, PRIMARY_KEY):
     if len(intent.split(' ')) > 1:
         intents.append(''.join([x[0].lower() for x in intent.split(' ')]))
         intents.append(' '.join([x[0].lower() for x in intent.split(' ')]))
-
-
+    # print(entities)
+    print("questions invoked !!!")
     for entity,values in entities.items():
         if entity in PRIMARY_KEY and entity != INTENT:
+            # print(1)
             questions.extend(add_ques1(intents,entity,values))
     
+    # print(questions)
     # for entity1,value1 in entities.items():
     #     for entity2,value2 in entities.items():
     #         if entity1 != entity2:
