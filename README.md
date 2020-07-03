@@ -34,6 +34,7 @@ pip install -r requirements.txt
 ```
 Install glove.6B.300d.txt (1 GB file) from: 
 ```sh
+https://www.kaggle.com/thanakomsn/glove6b300dtxt
 ```
 
 Open up localhost at http://127.0.0.1:5000/ for live demo of the app.
