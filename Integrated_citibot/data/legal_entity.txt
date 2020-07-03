@@ -1,6 +1,0 @@
-CitiBank NewYork
-CitiBank HongKong 
-CitiBank London
-CitiBank Singapore
-CitiBank Bengaluru 
-CitiBank Pune

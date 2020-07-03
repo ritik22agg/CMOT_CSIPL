@@ -1,7 +1,0 @@
-To: adityas29@outlook.com 
-From: a@citi.com 
-Subject: transaction 123 failed 
-
-Email_Body:  
-class: failed 
-Date: 2020-07-02 
