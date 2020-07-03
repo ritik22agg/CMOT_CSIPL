@@ -1,0 +1,17 @@
+To: adityas29@outlook.com 
+From:  
+Subject: Transaction id 123 
+
+Email_Body: 
+-----------Extracted from Attachment-----------
+From: phillip.allen@jpmorgan.com
+To: tim.belden@citisingapore.com
+
+Subject: Payment in Progress 101165
+
+Payment of 471862128 CAD to account id 101165 has been made on 19/02/2020 and is in progress.
+Please acknowledge.
+
+Thanks. 
+class: Processing 
+Date: Fri Jul  3 13:10:09 2020 

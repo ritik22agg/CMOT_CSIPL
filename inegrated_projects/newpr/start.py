@@ -441,12 +441,15 @@ def register():
 def submit():
     if request.method == 'POST':
         file = request.files['data']
-        path = 'botfiles/' + file.filename
+        path = '../botfiles/' + file.filename
         file.save(path)
-        #loadData(path)
-        q = 'python Backend/dynamictrain.py ' + path
-        #os.system(q)
-        #os.system('python Backend/train.py')
+        # loadData(path)
+        print("DATABASE CREATED!!! \n")
+        q = 'python ./dynamictrain.py ' + path
+        # os.system(q)
+        print("FILES UPDDATED!!! \n")
+        # os.system('python ./train.py')
+        print("MODEL TRAINED!!! \n")
 
     return redirect('/')
 

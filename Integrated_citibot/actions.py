@@ -47,7 +47,7 @@ import sys, os, pickle, json, datetime
 # ps -fA | grep python
 
 
-helpFile = json.load(open('data/help.json', 'r'))
+helpFile = json.load(open('./data/help.json', 'r'))
 
 FEATURES = ['Client_Name', 'Account_ID', 'Legal_Entity', 'Currency', 
             'Payment_Type', 'Paid_Amount', 'Payment_Date', 'Payment_Status', 
@@ -69,9 +69,10 @@ else:
 final_table = {**initial_table, **information_table}
 
 
-helpFile = json.load(open('data/help.json', 'r'))
+helpFile = json.load(open('./data/help.json', 'r'))
 
 def get_table(intent):
+    global Table
     tab = ""
     for table in final_table.keys():
         if intent in final_table[table]:
@@ -121,7 +122,7 @@ def record_finder(entities, table):
 def saveRecords(table, records):
     features = final_table[table]
     store = {i:{tup:val for tup,val in zip(features,records[i])} for i in range(len(records))}
-    with open('../CMOT_CSIPL/Integrated_citibot/botfiles/records.json', 'w') as fp:
+    with open('./botfiles/records.json', 'w') as fp:
         json.dump(store, fp)
     return 
 
@@ -229,6 +230,7 @@ class ActionPayCreation(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        global Table
         Table = ""
         dispatcher.utter_message(text=str(helpFile['Payment creation'][0]))
 
@@ -242,6 +244,7 @@ class ActionMultiAcc(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        global Table
         Table = ""
         dispatcher.utter_message(text=str(helpFile["Number of accounts"][0]))
 
@@ -255,6 +258,7 @@ class ActionPaySuccess(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        global Table
         Table = ""
         dispatcher.utter_message(text=str(helpFile['Payment Successful'][0]))
 
@@ -268,7 +272,7 @@ class ActionGetID(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        
+        global Table
         Table= ""
         dispatcher.utter_message(text=str(helpFile['Transaction id of payment'][0]))
 
@@ -282,7 +286,7 @@ class ActionCrossCountry(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-         
+        global Table
         Table= ""
         dispatcher.utter_message(text=str(helpFile['Cross country accounts'][0]))
 
@@ -296,7 +300,7 @@ class ActionAddAcc(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-         
+        global Table 
         Table= ""
         dispatcher.utter_message(text=str(helpFile['Add new fund and account details'][0]))
 
@@ -825,8 +829,8 @@ class actionSource(Action):
             if(len(entities) == 0):
                 print(Table)
                 dispatcher.utter_message(template = 'utter_Source')
-                if(Table != ""):
-                    dispatcher.utter_message(template = 'utter_table')
+                # if(Table != ""):
+                #     dispatcher.utter_message(template = 'utter_table')
                 return []
 
             if(containsEntity(primary_key, entities)):
