@@ -1,5 +1,0 @@
-GBP
-USD
-CAD 
-EUR 
-INR
