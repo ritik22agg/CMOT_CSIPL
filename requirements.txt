@@ -11,7 +11,7 @@ Automat==20.2.0
 backcall==0.1.0
 bcrypt==3.1.7
 beautifulsoup4==4.9.1
-bleach==3.1.4
+bleach==3.3.0
 blis==0.4.1
 boto3==1.13.25
 botocore==1.16.25
